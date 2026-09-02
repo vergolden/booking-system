@@ -51,10 +51,12 @@ def run():
 
     # гость с активной бронью, но без визитов "в прошлом" — для примера аналитики
     backend.create_booking(users[4], tables[4], TODAY, t("12:00"), t("13:00"), 1)
-    backend.cancel_booking(
-        backend.get_all_bookings(booking_date=TODAY)[-1]["id"],
-        reason="гость передумал",
-    )
+
+    # отдельная бронь специально для демонстрации статуса "отменена" в аналитике —
+    # id берём напрямую из create_booking, а не через "последнюю бронь дня" (та
+    # сортировка по времени начала однажды случайно отменила не ту запись)
+    cancelled_booking_id = backend.create_booking(users[2], tables[1], TOMORROW, t("12:00"), t("13:00"), 2)
+    backend.cancel_booking(cancelled_booking_id, reason="гость передумал")
 
     print("Готово: 5 гостей, 5 столов, брони созданы.")
     print(f"Намеренный конфликт для демонстрации: стол №4 на {TOMORROW} уже занят 19:00–22:00.")
